@@ -10,6 +10,28 @@
 import codecs
 import xml.etree.ElementTree as et
 
+import csv
+import io
+
+
+def csv_list_to_string(row, newline='', lineterminator=''):
+    """Convert a list of strings into a single string with CSV-style escapes."""
+    output = io.StringIO(newline=newline)
+    writer = csv.writer(output, lineterminator=lineterminator)
+    writer.writerow(row)
+    output.seek(0)
+    return output.read()
+
+
+def csv_dict_to_string(row, fieldnames, newline='', lineterminator=''):
+    """Convert an OrderedDict of strings into a single string with CSV-style escapes."""
+    output = io.StringIO(newline=newline)
+    writer = csv.DictWriter(output, fieldnames, lineterminator=lineterminator)
+    writer.writerow(row)
+    output.seek(0)
+    return output.read()
+
+
 class xml2csv:
 
     def __init__(self, input_file, output_file):
@@ -80,6 +102,7 @@ class xml2csv:
 
         # iterate through the xml
         for event, elem in self.context:
+
             # if elem is an unignored child node of the record tag, it should be written to buffer
             should_write = elem.tag != tag and started and elem.tag not in ignore
             # and if a header is required and if there isn't one
@@ -110,11 +133,16 @@ class xml2csv:
                         self.output.write((delimiter.join(header_line) + '\n').encode())
                     tagged = True
 
+                    # # send the csv to buffer
+                    # if quotes:
+                    #     self.output_buffer.append(r'"' + (r'"' + delimiter + r'"').join(items) + r'"')
+                    # else:
+                    #     self.output_buffer.append((delimiter).join(items))
+
+                    # NOTE: The preceding block of code does not correctly quote all fields.
+
                     # send the csv to buffer
-                    if quotes:
-                        self.output_buffer.append(r'"' + (r'"' + delimiter + r'"').join(items) + r'"')
-                    else:
-                        self.output_buffer.append((delimiter).join(items))
+                    self.output_buffer.append(csv_list_to_string(items))
                     items = []
 
                     n += 1
