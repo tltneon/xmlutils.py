@@ -1,4 +1,4 @@
-﻿"""
+"""
 	xml2sql.py
 	Kailash Nadh, http://nadh.in
 	October 2011

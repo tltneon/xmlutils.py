@@ -1,4 +1,4 @@
-﻿"""
+"""
     xml2json.py
     Kailash Nadh, http://nadh.in
     December 2012

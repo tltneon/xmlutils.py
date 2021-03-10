@@ -1,4 +1,4 @@
-﻿"""
+"""
     xml2csv.py
     Kailash Nadh, http://nadh.in
     October 2011
