@@ -1,4 +1,4 @@
-﻿"""
+"""
     xml2csv.py
     Kailash Nadh, http://nadh.in
     October 2011
@@ -10,16 +10,37 @@
 import codecs
 import xml.etree.ElementTree as et
 
+import csv
+import io
+
+
+def csv_list_to_string(row, newline='', lineterminator=''):
+    """Convert a list of strings into a single string with CSV-style escapes."""
+    output = io.StringIO(newline=newline)
+    writer = csv.writer(output, lineterminator=lineterminator)
+    writer.writerow(row)
+    output.seek(0)
+    return output.read()
+
+
+def csv_dict_to_string(row, fieldnames, newline='', lineterminator=''):
+    """Convert an OrderedDict of strings into a single string with CSV-style escapes."""
+    output = io.StringIO(newline=newline)
+    writer = csv.DictWriter(output, fieldnames, lineterminator=lineterminator)
+    writer.writerow(row)
+    output.seek(0)
+    return output.read()
+
+
 class xml2csv:
 
-    def __init__(self, input_file, output_file, encoding='utf-8'):
+    def __init__(self, input_file, output_file):
         """Initialize the class with the paths to the input xml file
         and the output csv file
 
         Keyword arguments:
         input_file -- input xml filename
         output_file -- output csv filename
-        encoding -- character encoding
         """
 
         self.output_buffer = []
@@ -30,9 +51,10 @@ class xml2csv:
 
         # output file handle
         try:
-            self.output = codecs.open(output_file, "w", encoding=encoding)
+            self.output = open(output_file, "wb")
+        except TypeError:
+            self.output = output_file
         except:
-            print("Failed to open the output file")
             raise
 
 
@@ -80,6 +102,7 @@ class xml2csv:
 
         # iterate through the xml
         for event, elem in self.context:
+
             # if elem is an unignored child node of the record tag, it should be written to buffer
             should_write = elem.tag != tag and started and elem.tag not in ignore
             # and if a header is required and if there isn't one
@@ -107,15 +130,21 @@ class xml2csv:
                 elif elem.tag == tag and len(items) > 0:
                     # csv header (element tag names)
                     if header_line and not tagged:
-                        self.output.write(delimiter.join(header_line) + '\n')
+                        self.output.write((delimiter.join(header_line) + '\n').encode())
                     tagged = True
 
+                    # # send the csv to buffer
+                    # if quotes:
+                    #     self.output_buffer.append(r'"' + (r'"' + delimiter + r'"').join(items) + r'"')
+                    # else:
+                    #     self.output_buffer.append((delimiter).join(items))
+
+                    # NOTE: The preceding block of code does not correctly quote all fields.
+
                     # send the csv to buffer
-                    if quotes:
-                        self.output_buffer.append(r'"' + (r'"' + delimiter + r'"').join(items) + r'"')
-                    else:
-                        self.output_buffer.append((delimiter).join(items))
+                    self.output_buffer.append(csv_list_to_string(items))
                     items = []
+
                     n += 1
 
                     # halt if the specified limit has been hit
@@ -137,5 +166,5 @@ class xml2csv:
     def _write_buffer(self):
         """Write records from buffer to the output file"""
 
-        self.output.write('\n'.join(self.output_buffer) + '\n')
+        self.output.write(('\n'.join(self.output_buffer) + '\n').encode())
         self.output_buffer = []

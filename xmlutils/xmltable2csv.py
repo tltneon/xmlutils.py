@@ -1,4 +1,4 @@
-﻿"""
+"""
     xmltable2csv.py
     Yigal Lazarev, http://yig.al
     May 2015
