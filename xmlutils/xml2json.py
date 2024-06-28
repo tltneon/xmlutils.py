@@ -100,11 +100,20 @@ class xml2json:
             except Exception as e:  # [{a: 1}, {a: 2}, {a: 3}] => {a: [1, 2, 3]}
                 scalar = True
 
-            if scalar:
-                if len(cur) > 1:
-                    cur = {elem[0].tag: [list(e.values())[0] for e in cur if list(e.values())[0] is not None]}
-                else:
-                    cur = {elem[0].tag: cur[0].values()[0] }
+            try:
+                if scalar:
+                    if len(cur) > 1:
+                        cur = {elem[0].tag: [list(e.values())[0] for e in cur if list(e.values())[0] is not None]}
+                    else:
+                        cur = {elem[0].tag: cur[0].values()[0] }
+            except Exception as e:
+                pass
+ 
+            try:
+                if elem.attrib:
+                    cur["@attrib"] = elem.attrib
+            except Exception as e:
+                pass
 
             block[elem.tag] = cur
         else:
@@ -129,4 +138,4 @@ class xml2json:
         if hasattr(elem, 'getroot'):
             elem = elem.getroot()
 
-        return json.dumps(self._elem2list(elem), indent=(4 if pretty else None))
+        return json.dumps(self._elem2list(elem), indent=(4 if pretty else None), ensure_ascii=False).encode('utf8').decode()
