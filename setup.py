@@ -4,13 +4,13 @@ from setuptools import setup
 
 setup(
 	name="xmlutils",
-	version="1.4.1",
+	version="1.4.2",
 	description="A set of utilities for processing XML documents and converting to other formats",
 	author="Kailash Nadh",
 	author_email="kailash.nadh@gmail.com",
 	url="http://nadh.in/code/xmlutils.py",
 	packages=['xmlutils'],
-	download_url="http://github.com/knadh/xmlutils.py",
+	download_url="http://github.com/tltneon/xmlutils.py",
 	license="MIT License",
 	entry_points = {
 		'console_scripts': [
@@ -21,13 +21,14 @@ setup(
 		],
 	},
 	classifiers=[
-		"Development Status :: 4 - Beta",
+		"Development Status :: 5 - Production/Stable",
 		"Intended Audience :: Developers",
 		"Programming Language :: Python",
 		"Natural Language :: English",
 		"License :: OSI Approved :: MIT License",
 		"Programming Language :: Python :: 2.6",
 		"Programming Language :: Python :: 2.7",
+		"Programming Language :: Python :: 3",
 		"Topic :: Software Development :: Libraries :: Python Modules",
 		"Topic :: Text Processing :: Markup :: XML",
 		"Topic :: Software Development :: Libraries"
